@@ -1,11 +1,11 @@
 import "./App.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [posts, setPosts] = useState();
   const [showCreatePost, setShowCreatePost] = useState(false);
-  const newTitle = useRef();
-  const newContent = useRef();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   const fetchPosts = async () => {
     const response = await fetch(`${process.env.REACT_APP_API}posts`);
@@ -16,8 +16,8 @@ function App() {
 
   const addPost = async () => {
     const newPost = {
-      title: newTitle.current.value,
-      content: newContent.current.value,
+      title: title,
+      content: content,
     };
     await fetch(`${process.env.REACT_APP_API}post`, {
       method: "POST",
@@ -26,6 +26,9 @@ function App() {
       },
       body: JSON.stringify(newPost),
     });
+    setTitle("");
+    setContent("");
+    alert("Post created!");
     fetchPosts();
     setShowCreatePost(false);
   };
@@ -40,20 +43,18 @@ function App() {
         <h1>My Posts</h1>
         <button onClick={() => setShowCreatePost(true)}>Create new post</button>
       </div>
-      {posts?.map((post) => {
-        return (
-          <div className="post-container">
-            <h2>{post.title}</h2>
-            <div className="date-info">
-              <span>{post.postedBy}</span>
-              <span>
-                {new Date(post.createdAt).toLocaleString().slice(0, -3)}
-              </span>
-            </div>
-            <p>{post.content}</p>
+      {posts?.map((post) => (
+        <div key={post._id} className="post-container">
+          <h2>{post.title}</h2>
+          <div className="date-info">
+            <span>{post.postedBy}</span>
+            <span>
+              {new Date(post.createdAt).toLocaleString().slice(0, -3)}
+            </span>
           </div>
-        );
-      })}
+          <p>{post.content}</p>
+        </div>
+      ))}
     </div>
   ) : (
     <div className="create-post-container">
@@ -65,11 +66,18 @@ function App() {
       </div>
       <label>
         <h3>Title</h3>
-        <input type="text" ref={newTitle} />
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
       </label>
       <label>
         <h3>Content</h3>
-        <textarea ref={newContent} />
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
       </label>
       <button onClick={() => addPost()}>Add post to database</button>
     </div>
