@@ -43,7 +43,7 @@ function App() {
       {posts?.map((post) => {
         return (
           <div className="post-container">
-            <h1>{post.title}</h1>
+            <h2>{post.title}</h2>
             <div className="date-info">
               <span>{post.postedBy}</span>
               <span>
